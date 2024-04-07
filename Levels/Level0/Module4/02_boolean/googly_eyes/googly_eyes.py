@@ -7,17 +7,24 @@ from tkinter import Tk, Canvas, PhotoImage
 from PIL import Image, ImageTk
 import os
 
+WIDTH = 750
+HEIGHT = 600
+
+
+def main():
+    root = Tk()
+    root.title("Googly Eyes")
+    canvas = Canvas(root, width=WIDTH, height=HEIGHT)
+    face = load_image("big_eye_bird.png", (WIDTH, HEIGHT))
+    app = GooglyEyes(canvas, face)
+    root.mainloop()
+
 
 class GooglyEyes:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Googly Eyes")
-
-        # Load image and adjust canvas size
-        self.face = self.load_image("big_eye_bird.png", (750, 600))
-        self.canvas = Canvas(master, width=self.face.width(), height=self.face.height())
+    def __init__(self, canvas, face):
+        self.canvas = canvas
         self.canvas.pack()
-        self.canvas.create_image(0, 0, anchor="nw", image=self.face)
+        self.canvas.create_image(0, 0, anchor="nw", image=face)
 
         # Define eye positions and sizes relative to image size
         self.left_eye_x, self.left_eye_y = 240, 212
@@ -33,14 +40,8 @@ class GooglyEyes:
         )
 
         # Bind mouse click event to move_eye function
-        self.canvas.bind("<Button-1>", self.move_eye)
-
-    def load_image(self, file, size):
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        image_path = os.path.join(current_dir, file)
-        image = Image.open(image_path)
-        image = image.resize(size, resample=Image.BILINEAR)  # Adjust image size
-        return ImageTk.PhotoImage(image)
+        self.canvas.bind("<Motion>", self.move_eye)
+        self.canvas.bind("<Button-1>", print)
 
     def draw_eye(self, eye_center_x, eye_center_y, eye_radius, side):
         # Calculate pupil positions
@@ -67,6 +68,13 @@ class GooglyEyes:
         )
 
 
-root = Tk()
-app = GooglyEyes(root)
-root.mainloop()
+def load_image(file, size):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    image_path = os.path.join(current_dir, file)
+    image = Image.open(image_path)
+    image = image.resize(size, resample=Image.BILINEAR)  # Adjust image size
+    return ImageTk.PhotoImage(image)
+
+
+if __name__ == "__main__":
+    main()
